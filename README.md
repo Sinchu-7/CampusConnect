@@ -1,47 +1,43 @@
 # CampusConnect
 
-CampusConnect is a role-aware college management system with a vanilla HTML/CSS/JavaScript client, an Express REST API, and MongoDB persistence through Mongoose. It supports administrator, student, and faculty accounts.
+CampusConnect includes a responsive React/Vite college dashboard and a separate Express/MongoDB API. The frontend demo is intentionally standalone: it does not call the API, connect to MongoDB, or provide real authentication.
 
 ## Requirements
 
 - Node.js 20 or newer and npm
-- MongoDB 6+ locally, or a MongoDB Atlas cluster
+- No database or backend setup is needed to run the frontend demo
 
-## Run locally
+## Run the frontend demo
 
-1. Install the project dependencies:
+1. Open a terminal at the repository root and move into the frontend:
+
+   ```powershell
+   cd frontend
+   ```
+
+2. Install the frontend dependencies:
 
    ```powershell
    npm install
    ```
 
-2. Copy `.env.example` to `.env`. Set `MONGODB_URI` to your local MongoDB URL or Atlas connection string. Replace `JWT_SECRET` with a private random value of at least 32 characters. Configure the seed administrator values before creating the first admin.
-
-   A PowerShell example for generating a secret:
+3. Start the Vite development server:
 
    ```powershell
-   [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(48))
+   npm run dev
    ```
 
-3. Start MongoDB if you are using a local instance, then create the initial administrator once:
+4. Open the local URL printed by Vite (normally <http://localhost:5173>).
 
-   ```powershell
-   npm run seed:admin
-   ```
+You can sign in with the sample account `aarav.sharma@campus.edu` and any password with at least six characters, or create a student account. Demo accounts and sessions are stored in this browser only. This is not secure authentication; do not enter a real password or sensitive personal information.
 
-   The seed refuses to run if an administrator already exists. It reads `ADMIN_NAME`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` from `.env`; the password must be at least 12 characters. Do not share or commit `.env`.
+## Frontend structure
 
-4. Start the server and open <http://localhost:3000>:
-
-   ```powershell
-   npm start
-   ```
-
-   For development with Node's file watcher, use `npm run dev`.
-
-Students and faculty can register through the sign-in page. Administrator registration is not public; use the one-time seed or have an administrator provision accounts.
+The standalone React app lives in `frontend/`: `src/components/` contains reusable interface elements, `src/pages/` contains login, registration, and dashboard screens, `src/data/` contains sample campus data, and `src/styles/` contains the responsive theme. Use `npm run build` from `frontend/` to create a production build.
 
 ## Environment variables
+
+The following variables are for the existing optional backend only. They are not needed by the frontend demo.
 
 | Variable | Purpose |
 | --- | --- |
@@ -58,15 +54,11 @@ Students and faculty can register through the sign-in page. Administrator regist
 
 For production, serve the site over HTTPS, set `COOKIE_SECURE=true`, use a strong unique JWT secret, and restrict `CLIENT_ORIGIN` to the actual frontend origin.
 
-## Features
+## Existing backend and API
 
-- Password hashing with bcrypt, HttpOnly/SameSite JWT cookies, logout, authenticated profile updates, and login/registration rate limiting.
-- Role-scoped dashboards and API permissions for admins, students, and faculty.
-- Admin-managed accounts, departments, courses, and timetables.
-- Attendance and assessment records; students see their own records, while faculty can only manage records in assigned courses.
-- Audience- and department-filtered announcements.
-- Responsive dark dashboard, search, data-entry dialogs, confirmations, loading states, and toast notifications.
-- MongoDB-backed persistence; the app fails clearly at startup when the database URI or JWT secret is missing.
+The API in `backend/` is separate from the frontend demo and requires Node.js 20+, MongoDB 6+ (local or Atlas), and backend environment variables. To run it, install the root dependencies with `npm install`, configure `.env` using `.env.example`, start MongoDB, and run `npm start` from the repository root. The current React frontend does not use this API.
+
+The backend provides password hashing, HttpOnly/SameSite JWT cookies, login and registration rate limiting, role-scoped API access, student/faculty/admin management, academic records, and audience-filtered announcements.
 
 ## REST API
 
